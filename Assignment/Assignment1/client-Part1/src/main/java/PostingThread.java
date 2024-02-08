@@ -41,11 +41,8 @@ public class PostingThread implements Runnable {
       boolean success = false;
       int retries = 0;
       while (!success && retries < MAX_RETRIES) {
-        Integer resortID = random.nextInt(RESORT_ID_RANGE) + 1;
-        Integer skierID = random.nextInt(SKIER_ID_RANGE) + 1;
         try {
-          ApiResponse<Void> apiResponse = skiersApi.writeNewLiftRideWithHttpInfo(liftRide, resortID, SEASON_ID,DAY_ID, skierID);
-//          System.out.println(apiResponse.getStatusCode());
+          ApiResponse<Void> apiResponse = skiersApi.writeNewLiftRideWithHttpInfo(liftRide, random.nextInt(RESORT_ID_RANGE) + 1, SEASON_ID,DAY_ID, random.nextInt(SKIER_ID_RANGE) + 1);
           if (apiResponse.getStatusCode() == 201) {
             successfulRequests.incrementAndGet();
             success = true;
@@ -67,7 +64,7 @@ public class PostingThread implements Runnable {
 
   private SkiersApi createApiClient() {
     ApiClient apiClient = new ApiClient();
-    apiClient.setBasePath("http://localhost:8081/servlet_war");
+    apiClient.setBasePath("http://54.187.202.11:8080/servlet_war");
     return new SkiersApi(apiClient);
   }
 }

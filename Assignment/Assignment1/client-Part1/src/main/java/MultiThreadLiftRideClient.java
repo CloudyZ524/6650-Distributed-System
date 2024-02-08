@@ -15,11 +15,11 @@ public class MultiThreadLiftRideClient {
   private static AtomicInteger failedRequests = new AtomicInteger(0);
 
   public static void main(String[] args) throws InterruptedException {
-    long startTime = System.currentTimeMillis();
-
     // Start LiftRide generation
     Thread eventGeneratorThread = new Thread(new EventGenerator(GeneratorQueue, TOTAL_REQUESTS));
     eventGeneratorThread.start();
+
+    long startTime = System.currentTimeMillis();
 
     // Create ThreadPoolExecutor
     ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -46,7 +46,6 @@ public class MultiThreadLiftRideClient {
       Thread.currentThread().interrupt();
     }
 
-
     // Print results
     long totalTime = System.currentTimeMillis() - startTime;
     System.out.println("Successful requests: " + successfulRequests.get());
@@ -56,3 +55,4 @@ public class MultiThreadLiftRideClient {
     executor.shutdown();
   }
 }
+
