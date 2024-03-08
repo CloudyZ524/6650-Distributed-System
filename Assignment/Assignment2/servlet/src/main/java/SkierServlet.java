@@ -97,7 +97,7 @@ public class SkierServlet extends HttpServlet {
 
   private void sendToMessageQueue(String message) {
     ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost("localhost");
+    factory.setHost("34.215.62.210");
     try (Connection connection = factory.newConnection();
         Channel channel = connection.createChannel()) {
       // Send message to queue
