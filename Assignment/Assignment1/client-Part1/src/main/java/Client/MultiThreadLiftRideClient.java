@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiThreadLiftRideClient {
-  private static int TOTAL_REQUESTS = 200000;
-  private static int INITIAL_THREADS = 5;
-  private static int REQUESTS_PER_THREAD = 1000;
+  private static int TOTAL_REQUESTS = 1;
+  private static int INITIAL_THREADS = 1;
+  private static int REQUESTS_PER_THREAD = 1;
   private static BlockingQueue<LiftRide> GeneratorQueue = new LinkedBlockingQueue<>(TOTAL_REQUESTS);
   private static AtomicInteger successfulRequests = new AtomicInteger(0);
   private static AtomicInteger failedRequests = new AtomicInteger(0);
