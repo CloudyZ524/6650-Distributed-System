@@ -1,4 +1,4 @@
-/*
+package consumer;/*
  * Ski Data API for NEU Seattle distributed systems course
  * An API for an emulation of skier managment system for RFID tagged lift tickets. Basis for CS6650 Assignments for 2019
  *
@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 /**
- * LiftRide
+ * consumer.LiftRide
  */
 public class LiftRide {
   @SerializedName("time")
@@ -80,7 +80,7 @@ public class LiftRide {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class LiftRide {\n");
+    sb.append("class consumer.LiftRide {\n");
     sb.append("    time: ").append(toIndentedString(time)).append("\n");
     sb.append("    liftID: ").append(toIndentedString(liftID)).append("\n");
     sb.append("}");

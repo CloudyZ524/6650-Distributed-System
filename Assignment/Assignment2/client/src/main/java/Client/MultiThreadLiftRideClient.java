@@ -1,6 +1,5 @@
 package Client;
 
-import Client.EventGenerator;
 import io.swagger.client.model.LiftRide;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -23,7 +22,6 @@ public class MultiThreadLiftRideClient {
     eventGeneratorThread.start();
 
     long startTime = System.currentTimeMillis();
-
 
     // Create ThreadPoolExecutor
     ThreadPoolExecutor executor = new ThreadPoolExecutor(

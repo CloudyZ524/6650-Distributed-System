@@ -1,4 +1,5 @@
-import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.servlet.*;
@@ -13,6 +14,11 @@ import com.rabbitmq.client.ConnectionFactory;
 public class SkierServlet extends HttpServlet {
 
   private final static String QUEUE_NAME = "SkierQueue";
+  private static ConnectionFactory factory = new ConnectionFactory();
+  private static final int CHANNEL_POOL_SIZE = 120;
+  private static final BlockingQueue<Channel> channelPool = new LinkedBlockingQueue<>(CHANNEL_POOL_SIZE);
+
+  static { initializeChannelPool();}
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -90,24 +96,37 @@ public class SkierServlet extends HttpServlet {
     }
   }
 
+  private static void initializeChannelPool() {
+    factory.setHost("34.220.147.139");
+    try {
+      Connection connection = factory.newConnection();
+      for (int i = 0; i < CHANNEL_POOL_SIZE; i++) {
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channelPool.add(channel);
+      }
+    } catch (IOException | TimeoutException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   // Package liftRide with skierID in JSON
   private String packageMessage(String body, String skierID) {
     return "{\"body\":" + body + ", \"skierID\":\"" + skierID + "\"}";
   }
 
   private void sendToMessageQueue(String message) {
-    ConnectionFactory factory = new ConnectionFactory();
-    factory.setHost("34.215.62.210");
-    try (Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel()) {
+    Channel channel = channelPool.poll();
+    try{
       // Send message to queue
-      channel.queueDeclare(QUEUE_NAME, false, false, false, null);
       channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
       System.out.println(" [x] Sent '" + message + "'");
     } catch (IOException e) {
       throw new RuntimeException(e);
-    } catch (TimeoutException e) {
-      throw new RuntimeException(e);
+    } finally {
+      if (channel != null) {
+        channelPool.offer(channel);
+      }
     }
-  }
+  };
 }
