@@ -1,14 +1,15 @@
 package Client;
 
 import io.swagger.client.ApiClient;
-import io.swagger.client.ApiException;
 import io.swagger.client.ApiResponse;
 import io.swagger.client.api.SkiersApi;
 import io.swagger.client.model.LiftRide;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.commons.lang3.concurrent.EventCountCircuitBreaker;
 
 public class PostingThread implements Runnable {
   private BlockingQueue<LiftRide> queue;
@@ -22,6 +23,9 @@ public class PostingThread implements Runnable {
   final private int SKIER_ID_RANGE = 100000;
   final private int DAY_ID_RANGE = 366;
   final private String SEASON_ID = "2024";
+  // Initialize the circuit breaker
+  private static final EventCountCircuitBreaker circuitBreaker =
+      new EventCountCircuitBreaker(10, 1, TimeUnit.MINUTES, 5, 1, TimeUnit.MINUTES);
 
   public PostingThread(BlockingQueue<LiftRide> queue, int numRequests,
       AtomicInteger successfulRequests, AtomicInteger failedRequests, CountDownLatch count) {
@@ -40,26 +44,25 @@ public class PostingThread implements Runnable {
       if (liftRide == null) {
         break;
       }
-      boolean success = false;
-      int retries = 0;
-      while (!success && retries < MAX_RETRIES) {
-        try {
-          ApiResponse<Void> apiResponse = skiersApi.writeNewLiftRideWithHttpInfo(liftRide, random.nextInt(RESORT_ID_RANGE) + 1, SEASON_ID, String.valueOf(random.nextInt(DAY_ID_RANGE) + 1), random.nextInt(SKIER_ID_RANGE) + 1);
-          if (apiResponse.getStatusCode() == 201) {
-            successfulRequests.incrementAndGet();
-            success = true;
-          } else if (apiResponse.getStatusCode() >= 400) {
-            retries++;
-          }
-        } catch (ApiException e) {
-          System.err.println("Exception when calling SkiersApi#writeNewLiftRide for " + liftRide);
-          e.printStackTrace();
-        } finally {
-          this.count.countDown();
-        }
-      }
-      if (!success) {
+      if (!circuitBreaker.checkState()) {
         failedRequests.incrementAndGet();
+        continue;
+      }
+      try {
+        ApiResponse<Void> apiResponse = skiersApi.writeNewLiftRideWithHttpInfo(liftRide, random.nextInt(RESORT_ID_RANGE) + 1, SEASON_ID, String.valueOf(random.nextInt(DAY_ID_RANGE) + 1), random.nextInt(SKIER_ID_RANGE) + 1);
+
+        if (apiResponse.getStatusCode() == 201) {
+          successfulRequests.incrementAndGet();
+          circuitBreaker.close(); // Explicitly close the circuit on a successful call
+        } else {
+          failedRequests.incrementAndGet();
+          circuitBreaker.incrementAndCheckState(); // Increment the counter and check the state
+        }
+      } catch (Exception e) {
+        failedRequests.incrementAndGet();
+        circuitBreaker.incrementAndCheckState(); // Increment the counter and check the state
+      } finally {
+        this.count.countDown();
       }
     }
   }

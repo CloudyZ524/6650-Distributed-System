@@ -15,8 +15,8 @@ public class LiftRideConsumer {
   private final static String QUEUE_NAME = "SkierQueue";
   private static Gson gson = new Gson();
   private static ConnectionFactory factory = new ConnectionFactory();
-  private static final int CHANNEL_POOL_SIZE = 120;
-  private static final int NUM_OF_THREAD = 120;
+  private static final int CHANNEL_POOL_SIZE = 200;
+  private static final int NUM_OF_THREAD = 200;
   private static final BlockingQueue<Channel> channelPool = new LinkedBlockingQueue<>(CHANNEL_POOL_SIZE);
 
   static { initializeChannelPool();}
@@ -42,5 +42,4 @@ public class LiftRideConsumer {
       throw new RuntimeException(e);
     }
   }
-
 }
