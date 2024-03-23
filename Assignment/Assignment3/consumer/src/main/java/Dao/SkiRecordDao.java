@@ -26,20 +26,7 @@ public class SkiRecordDao {
     }
 
     // add new ski records into DynamoDB
-    public void addSkiRecord(SkiRecord skiRecord) {
-        Map<String, AttributeValue> item = new HashMap<>();
-        item.put("SkierId", AttributeValue.builder().n(Integer.toString(skiRecord.getSkierId())).build());
-        item.put("SeasonDayId", AttributeValue.builder().s(skiRecord.getSeasonDayId()).build());
-        item.put("SeasonId", AttributeValue.builder().n(Integer.toString(skiRecord.getSeasonId())).build());
-        item.put("ResortId", AttributeValue.builder().n(Integer.toString(skiRecord.getResortId())).build());
-        item.put("DayId", AttributeValue.builder().n(Integer.toString(skiRecord.getDayId())).build());
-
-        LiftRide liftRide = skiRecord.getLiftRide();
-        Map<String, AttributeValue> liftRideAttributes = new HashMap<>();
-        liftRideAttributes.put("LiftID", AttributeValue.builder().n(String.valueOf(liftRide.getLiftID())).build());
-        liftRideAttributes.put("Time", AttributeValue.builder().s(String.valueOf(liftRide.getTime())).build());
-        item.put("LiftRide", AttributeValue.builder().m(liftRideAttributes).build());
-
+    public void addSkiRecord(Map<String, AttributeValue> item) {
         PutItemRequest putItemRequest = PutItemRequest.builder()
                 .tableName(TABLE_NAME)
                 .item(item)
@@ -47,6 +34,7 @@ public class SkiRecordDao {
         try {
             dynamoDbClient.putItem(putItemRequest);
         } catch (DynamoDbException e) {
+            e.printStackTrace();
             System.err.println(e.getMessage());
         }
     }

@@ -100,7 +100,7 @@ public class SkierServlet extends HttpServlet {
   }
 
   private static void initializeChannelPool() {
-    factory.setHost("34.220.147.139");
+    factory.setHost("localhost");
     try {
       Connection connection = factory.newConnection();
       for (int i = 0; i < CHANNEL_POOL_SIZE; i++) {
@@ -115,8 +115,11 @@ public class SkierServlet extends HttpServlet {
 
   // Package SkiRecord in JSON
   private String packageMessage(String body, String resortID, String seasonID, String dayID, String skierID) {
-    return "{\"body\":" + body + ", \"resortID\":\"" + resortID + ", \"seasonID\":\"" + seasonID +
-            ", \"dayID\":\"" + dayID + ", \"skierID\":\"" + skierID + "\"}";
+    return "{\"body\":" + body +
+        ", \"resortID\":\"" + resortID + "\"" +
+        ", \"seasonID\":\"" + seasonID + "\"" +
+        ", \"dayID\":\"" + dayID + "\"" +
+        ", \"skierID\":\"" + skierID + "\"}";
   }
 
   private void sendToMessageQueue(String message) {

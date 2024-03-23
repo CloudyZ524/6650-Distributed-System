@@ -23,28 +23,25 @@ public class DynamoDBConnection {
         boolean tableExists = dynamoDbClient.listTables().tableNames().contains(tableName);
         if (!tableExists) {
             CreateTableRequest request = CreateTableRequest.builder()
-                    .attributeDefinitions(AttributeDefinition.builder()
-                                    .attributeName("SkierId")
-                                    .attributeType(ScalarAttributeType.N)
-                                    .build(),
-                            AttributeDefinition.builder()
-                                    .attributeName("SeasonDayId")
-                                    .attributeType(ScalarAttributeType.S)
-                                    .build())
-                            .keySchema(KeySchemaElement.builder()
-                                    .attributeName("SkierId")
-                                    .keyType(KeyType.HASH)  // primary key
-                                    .build(),
-                            KeySchemaElement.builder()
-                                    .attributeName("SeasonDayId")
-                                    .keyType(KeyType.RANGE)  // sort key
-                                    .build())
-                    .provisionedThroughput(ProvisionedThroughput.builder()
-                            .readCapacityUnits(5L)
-                            .writeCapacityUnits(5L)
-                            .build())
-                    .tableName(tableName)
-                    .build();
+            .tableName(tableName)
+                .attributeDefinitions(AttributeDefinition.builder()
+                                .attributeName("SkierId")
+                                .attributeType(ScalarAttributeType.N)
+                                .build(),
+                        AttributeDefinition.builder()
+                                .attributeName("SeasonDayId")
+                                .attributeType(ScalarAttributeType.S)
+                                .build())
+                        .keySchema(KeySchemaElement.builder()
+                                .attributeName("SkierId")
+                                .keyType(KeyType.HASH)  // primary key
+                                .build(),
+                        KeySchemaElement.builder()
+                                .attributeName("SeasonDayId")
+                                .keyType(KeyType.RANGE)  // sort key
+                                .build())
+                .billingMode(BillingMode.PAY_PER_REQUEST)
+                .build();
             try {
                 dynamoDbClient.createTable(request);
                 System.out.println("Table created: " + tableName);

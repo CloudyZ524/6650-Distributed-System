@@ -66,7 +66,7 @@ public class PostingThread implements Runnable {
 
   private SkiersApi createApiClient() {
     ApiClient apiClient = new ApiClient();
-    apiClient.setBasePath("http://6650-hw2-812998719.us-west-2.elb.amazonaws.com:8080/servlet_war/");
+    apiClient.setBasePath("http://localhost:8081/servlet_war/");
     return new SkiersApi(apiClient);
   }
 }
