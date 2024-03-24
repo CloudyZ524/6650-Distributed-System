@@ -1,8 +1,6 @@
 package consumer;
 
-import Model.SkiRecord;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import com.rabbitmq.client.Channel;
@@ -30,7 +28,7 @@ public class LiftRideConsumer {
   }
 
   private static void initializeChannelPool() {
-    factory.setHost("localhost");
+    factory.setHost("18.236.162.12");
     try {
       Connection connection = factory.newConnection();
       for (int i = 0; i < CHANNEL_POOL_SIZE; i++) {

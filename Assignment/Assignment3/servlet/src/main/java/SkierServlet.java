@@ -100,7 +100,7 @@ public class SkierServlet extends HttpServlet {
   }
 
   private static void initializeChannelPool() {
-    factory.setHost("localhost");
+    factory.setHost("18.236.162.12");
     try {
       Connection connection = factory.newConnection();
       for (int i = 0; i < CHANNEL_POOL_SIZE; i++) {

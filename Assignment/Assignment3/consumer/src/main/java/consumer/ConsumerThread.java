@@ -1,7 +1,6 @@
 package consumer;
 
 import Dao.SkiRecordDao;
-import Model.SkiRecord;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.rabbitmq.client.Channel;

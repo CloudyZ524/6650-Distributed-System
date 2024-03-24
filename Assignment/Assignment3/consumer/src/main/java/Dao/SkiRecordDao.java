@@ -1,7 +1,5 @@
 package Dao;
 
-import Model.SkiRecord;
-import consumer.LiftRide;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;

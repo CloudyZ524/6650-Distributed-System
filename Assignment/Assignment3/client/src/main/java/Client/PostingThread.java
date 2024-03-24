@@ -18,14 +18,13 @@ public class PostingThread implements Runnable {
   private AtomicInteger failedRequests;
   private CountDownLatch count;
   private Random random = new Random();
-  final private int MAX_RETRIES = 5;
   final private int RESORT_ID_RANGE = 10;
   final private int SKIER_ID_RANGE = 100000;
   final private int DAY_ID_RANGE = 366;
   final private String SEASON_ID = "2024";
   // Initialize the circuit breaker
   private static final EventCountCircuitBreaker circuitBreaker =
-      new EventCountCircuitBreaker(10, 1, TimeUnit.MINUTES, 5, 1, TimeUnit.MINUTES);
+      new EventCountCircuitBreaker(20, 2, TimeUnit.MINUTES, 5, 2, TimeUnit.MINUTES);
 
   public PostingThread(BlockingQueue<LiftRide> queue, int numRequests,
       AtomicInteger successfulRequests, AtomicInteger failedRequests, CountDownLatch count) {
@@ -69,7 +68,7 @@ public class PostingThread implements Runnable {
 
   private SkiersApi createApiClient() {
     ApiClient apiClient = new ApiClient();
-    apiClient.setBasePath("http://localhost:8081/servlet_war/");
+    apiClient.setBasePath("http://54.69.247.191:8080/servlet_war/");
     return new SkiersApi(apiClient);
   }
 }
